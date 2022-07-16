@@ -1,37 +1,19 @@
 <script lang="ts">
    import GridElement from "./GridElement.svelte";
-import ToolSelector from "./ToolSelector.svelte";
+   import ToolSelector from "./ToolSelector.svelte";
+   import {init_grid_state } from "./tools";
 
+   import type {GridElementType} from "./tools";
+
+   // Props
 	export let rows: number;
 	export let cols: number;
 
-   let active_element: GridElement | undefined;
-
-   type GridElement = {
-      selected: boolean;
-      row: number;
-      col: number;
-   };
-
-   const init_grid_state = (rows: number, cols: number): GridElement[][] => {
-      const output: GridElement[][] = [];
-
-      for(let r = 0; r < rows; r++){
-         const row: GridElement[] = [];
-         for(let c = 0; c < cols; c++){
-            row[c] = {
-               selected: false,
-               row: r,
-               col: c
-            };
-         }
-         output.push(row)
-      }
-
-      return output;
-   }
-
-   const grid_state: GridElement[][] = init_grid_state(rows, cols);
+   // State 
+   let active_element: GridElementType | undefined;
+   let active_value: string | undefined;
+   let values: string[] = ["start", "end", "wall", "air"];
+   let grid_state: GridElementType[][] = init_grid_state(rows, cols);
 
    const mouse_up = () => {
       if(!active_element)
@@ -71,11 +53,11 @@ import ToolSelector from "./ToolSelector.svelte";
    </div>
 
    <ToolSelector
-      tile_values={["start", "end", "wall", "air"]}
-      active_value="end"
+      tile_values={values}
+      active_value={active_value}
       actions={["reset", "clear", "search"]}
       enable_actions={true}
-      on:set_active={(event) => console.log(event.detail.value)}
+      on:set_active={(event) => active_value = event.detail.value}
    />
 </div>
 
