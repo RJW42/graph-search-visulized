@@ -1,5 +1,6 @@
 type GridElementType = {
    selected: boolean;
+   value: string;
    row: number;
    col: number;
 };
@@ -13,6 +14,7 @@ const init_grid_state = (rows: number, cols: number): GridElementType[][] => {
       for(let c = 0; c < cols; c++){
          row[c] = {
             selected: false,
+            value: "air",
             row: r,
             col: c
          };
