@@ -8,16 +8,43 @@
    // Props
    export let grid_state: GridElementType[][];
    export let search_results: SearchResult | undefined;
+   let prev_search_results;
 
    const rows = grid_state.length;
    const cols = grid_state[0].length;
    const enable_edit = true;
    const dispatch = createEventDispatcher();
+   const path_timeout_time = 100;
 
-   $: path_set = ((search_results: SearchResult | undefined) => {
-      if(search_results) return new Set(search_results.path.map(n => n.id));
-      return new Set([] as number[]);
-   })(search_results);
+   let path_set = new Set([] as number[]);
+   let timeout: undefined | NodeJS.Timeout;
+
+   const update_path = (i: number) => {
+      if(i >= search_results.path.length) return;
+      path_set = path_set.add(search_results.path[i].id);
+      timeout = setTimeout(() => update_path(i + 1), path_timeout_time);
+   }
+
+   $: (() => {
+      if(!search_results) { 
+         // Search results was cleared. Need to stop any animations
+         if(timeout) clearTimeout(timeout);
+         if(path_set.size > 0) path_set = new Set([] as number[]);
+         prev_search_results = undefined;
+         return;
+      }
+
+      if(search_results === prev_search_results)
+         return;
+      prev_search_results = search_results;
+
+      timeout = setTimeout(() => update_path(1), path_timeout_time);
+   })();
+
+   // $: path_set = ((search_results: SearchResult | undefined) => {
+   //    if(search_results) return new Set(search_results.path.map(n => n.id));
+   //    return new Set([] as number[]);
+   // })(search_results);
 
    $: visited_set = ((search_results: SearchResult | undefined) => {
       if(search_results) return new Set(search_results.nodes_vistied.map(n => n.id))
@@ -28,8 +55,8 @@
       const node_id = get_node_id(element.row, element.col, rows, cols)
       if(path_set.has(node_id))
          return "path";
-      if(visited_set.has(node_id))
-         return "visited";
+      // if(visited_set.has(node_id))
+      //    return "visited";
       return undefined;
    }
 </script>
