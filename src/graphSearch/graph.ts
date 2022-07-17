@@ -11,6 +11,7 @@ type Graph = {
 type SearchResult = {
    path: Node[];
    nodes_vistied: Node[];
+   nodes_checked: Node[][];
 }
 
 type Node = {

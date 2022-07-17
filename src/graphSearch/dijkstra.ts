@@ -4,6 +4,7 @@ import type {Graph, SearchResult, Node} from "./graph";
 const search = (graph: Graph): SearchResult => {
    // Init search variables
    const nodes_vistied = [];
+   const nodes_checked = [];
    const distances = graph.nodes.map(_ => Infinity);
    const previous = graph.nodes.map(_ => undefined) as (Node | undefined)[];
    
@@ -24,8 +25,9 @@ const search = (graph: Graph): SearchResult => {
       if(closest_node.id === graph.goal_node || distances[closest_node.id] === Infinity)
          break;
 
-      // Track this node
+      // Track this node and its edges which are visited 
       nodes_vistied.push(closest_node);
+      const edges_checked = [];
 
       // Remove closest node from queue 
       node_queue = node_queue.filter(node => node.id !== closest_node.id);
@@ -36,12 +38,15 @@ const search = (graph: Graph): SearchResult => {
          node_queue.find(node => node.id === node_id) !== undefined
       ).forEach(node_id => {
          // Calc distance to this node 
+         edges_checked.push(graph.nodes[node_id]);
          const dist = distances[closest_node.id] + 1; // Todo: change to weight
          if(dist < distances[node_id] && distances[closest_node.id] !== Infinity) {
             distances[node_id] = dist;
             previous[node_id] = closest_node;
          }
       });
+
+      nodes_checked.push(edges_checked);
    }
 
    // Generate path 
@@ -64,7 +69,8 @@ const search = (graph: Graph): SearchResult => {
 
    return {
       path: path,
-      nodes_vistied: nodes_vistied
+      nodes_vistied: nodes_vistied,
+      nodes_checked: nodes_checked
    };
 }
 

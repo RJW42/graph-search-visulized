@@ -15,7 +15,8 @@
       (enable_edit ? "editable " : "") + 
       (selected ? "selected " : "") + 
       (search_value === "path" ? "path " : "") +
-      (search_value === "visited" ? "visited " : "");
+      (search_value === "visited" ? "visited " : "") +
+      (search_value === "checked" ? "checked " : "");
 </script>
 
 <div 
@@ -61,6 +62,10 @@
 
    .grid-item.air.visited div {
       background-color: aquamarine;
+   }
+
+   .grid-item.air.checked div {
+      background-color: blueviolet;
    }
 
    .grid-item.editable:hover,

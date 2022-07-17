@@ -20,6 +20,7 @@
 
    let path_set = new Set([] as number[]);
    let visited_set = new Set([] as number[]);
+   let checked_set = new Set([] as number[]);
    let timeout: undefined | NodeJS.Timeout;
 
    const update_path = (i: number) => {
@@ -28,13 +29,23 @@
       timeout = setTimeout(() => update_path(i + 1), path_timeout_time);
    }
 
-   const update_visited = (i: number) => {
+   const update_visited = (i: number, j: number) => {
       if(i >= search_results.nodes_vistied.length) {
          timeout = setTimeout(() => update_path(0), path_timeout_time);
          return;
       }
-      visited_set = visited_set.add(search_results.nodes_vistied[i].id);
-      timeout = setTimeout(() => update_visited(i + 1), visited_timneout_time);
+      if(j >= search_results.nodes_checked[i].length) { 
+         visited_set = visited_set.add(search_results.nodes_vistied[i].id);
+         timeout = setTimeout(() => update_visited(i + 1, 0), visited_timneout_time);
+         return;
+      } 
+      if(checked_set.has(j)) {
+         update_visited(i, j + 1);
+         return;
+      }
+      console.log("yee");
+      checked_set = checked_set.add(search_results.nodes_checked[i][j].id);
+      timeout = setTimeout(() => update_visited(i, j + 1), visited_timneout_time);
    }
 
    $: (() => {
@@ -50,7 +61,7 @@
       if(search_results === prev_search_results) return;
 
       prev_search_results = search_results;
-      timeout = setTimeout(() => update_visited(0), 0);
+      timeout = setTimeout(() => update_visited(0, 0), 0);
    })();
 
    const get_search_value = (element: GridElementType, path_set, visited_set) => {
@@ -59,6 +70,8 @@
          return "path";
       if(visited_set.has(node_id))
          return "visited";
+      if(checked_set.has(node_id))
+         return "checked";
       return undefined;
    }
 </script>
