@@ -6,8 +6,8 @@
    import { search } from "../graphSearch/dijkstra";
    import { create_graph } from "../graphSearch/graph";
 
-   import GridElement from "./GridElement.svelte";
    import ToolSelector from "./ToolSelector.svelte";
+   import GridDisplay from "./GridDisplay.svelte";
 
    // Props
 	export let rows: number;
@@ -24,7 +24,7 @@
    let start_element: GridElementType | undefined;
    let end_element: GridElementType | undefined;
 
-   const perform_action = (action: string, element?: GridElementType) => {
+   const perform_action = (action: string, element?: any) => {
       if(action === "mouse_up") {
          mouse_value = "up";
          if(!active_element || !active_value)
@@ -40,14 +40,16 @@
       } else if(action === "leave") {
          active_element = undefined;
       } else if(action === "reset") {
+         path = undefined;
          grid_state = init_grid_state(rows, cols);
          start_element = undefined;
          end_element = undefined;
       } else if(action === "search") {
+         active_value = undefined;
          path = search(create_graph(grid_state, rows, cols));
-         path.map(node => {
-            grid_state[node.row][node.col].value = "wall"
-         })
+      } else if(action === "set_value") {
+         active_value = element as string;   
+         path = undefined;
       }
    };
 
@@ -72,34 +74,18 @@
 </script>
 
 <div class="root-container">
-   <div 
-      class="grid-container"
-      on:mouseup="{() => perform_action("mouse_up")}"
-      on:mousedown="{() => perform_action("mouse_down")}"
-   >
-      {#each grid_state as row, r}
-         <div class="grid-row">
-            {#each row as element, c} 
-               <GridElement
-                  on:enter={() => perform_action("enter", element)}
-                  on:leave={() => perform_action("leave", element)}
-                  selected={element.selected}
-                  enable_edit={true}
-                  value={element.value}
-                  row={element.row}
-                  col={element.col}
-               />
-            {/each}
-         </div>
-      {/each}
-   </div>
+   <GridDisplay 
+      grid_state={grid_state}
+      path={path}
+      on:action={(event) => perform_action(event.detail.type, event.detail.props)}
+   />
 
    <ToolSelector
       tile_values={values}
       active_value={active_value}
       actions={["reset", "search"]}
       enable_actions={true}
-      on:set_active={(event) => active_value = event.detail.value}
+      on:set_active={(event) => perform_action("set_value", event.detail.value)}
       on:perform_action={(event) => perform_action(event.detail.action)}
    />
 </div>

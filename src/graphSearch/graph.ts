@@ -2,7 +2,7 @@ import type {GridElementType} from "../grid/tools";
 
 
 type Graph = {
-   nodes: Node[];
+   nodes: (Node | undefined)[];
    edges: number[][];
    start_node: number;
    goal_node: number;
@@ -38,7 +38,11 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
    // Init variables
    const partial_nodes = [...Array(rows * cols).keys()].map((id) => {
       const rc = get_row_col_from_id(id, rows, cols);
-      return {
+
+      // Get if element is a wall
+      if(grid[rc.row][rc.col].value === "wall")
+         return undefined; // Is wall 
+      return { // Not wall => a valid node
          id: id,
          row: rc.row,
          col: rc.col
@@ -48,6 +52,9 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
    const edges = [...Array(rows * cols).keys()].map((id) => {
       const node = partial_nodes[id];
       const offsetes = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+
+      // If node is a wall then it has no edges
+      if(!node) return [] as number[];
       
       return offsetes.reduce((edges, [x_offset, y_offset]) => {
          // Convert offsets to positions and remove invalid ones
@@ -55,8 +62,13 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
          const y = node.col + y_offset;
 
          // If position valid get node
-         if(x >= 0 && y >= 0 && x < rows && y < cols)
-            edges.push(get_node_id(x, y, rows, cols));
+         if(x >= 0 && y >= 0 && x < rows && y < cols) { 
+            const neighbour_id = get_node_id(x, y, rows, cols);
+
+            // If neighbour is valid node add to edge list
+            if(partial_nodes[neighbour_id])
+               edges.push(neighbour_id);
+         }
 
          return edges;
       }, [] as number[]);
@@ -65,6 +77,7 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
 
    // Add the edges to partial nodes
    const nodes = partial_nodes.map((node) => {
+      if(!node) return undefined;
       return {
          ...node,
          edges: edges[node.id]
@@ -73,11 +86,11 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
 
    // Get start and end then finish
    const start_node = nodes.find(node => {
-      return grid[node.row][node.col].value === "start"
+      return node && grid[node.row][node.col].value === "start"
    });
 
    const goal_node = nodes.find(node => {
-      return grid[node.row][node.col].value === "end"
+      return node && grid[node.row][node.col].value === "end"
    });
 
    if(!start_node || !goal_node)

@@ -1,4 +1,4 @@
-import {Graph, Node} from "./graph";
+import type {Graph, Node} from "./graph";
 
 
 const search = (graph: Graph) => {
@@ -6,7 +6,7 @@ const search = (graph: Graph) => {
    const distances = graph.nodes.map(_ => Infinity);
    const previous = graph.nodes.map(_ => undefined) as (Node | undefined)[];
    
-   let node_queue = [...graph.nodes];
+   let node_queue = graph.nodes.filter(node => node !== undefined);
 
    // Init start node 
    distances[graph.start_node] = 0;

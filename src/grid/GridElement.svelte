@@ -6,13 +6,15 @@
    export let value: string;
    export let row: number;
    export let col: number;
+   export let search_value: string | undefined;
 
    const dispatch = createEventDispatcher();
 
    // Init classes 
    $: classes = "grid-item " + value + " " +
       (enable_edit ? "editable " : "") + 
-      (selected ? "selected " : ""); 
+      (selected ? "selected " : "") + 
+      (search_value === "path" ? "path" : ""); 
 </script>
 
 <div 
@@ -50,6 +52,10 @@
 
    .grid-item.end div {
       background-color: gold;
+   }
+
+   .grid-item.air.path div {
+      background-color: blue;
    }
 
    .grid-item.editable:hover,
