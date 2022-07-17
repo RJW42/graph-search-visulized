@@ -1,27 +1,35 @@
 <script lang="ts">
    import type { GridElementType } from "./tools";
-   import { get_node_id, Node } from "../graphSearch/graph";
+   import { get_node_id, Node, SearchResult } from "../graphSearch/graph";
    import { createEventDispatcher } from "svelte";
 
    import GridElement from "./GridElement.svelte";
 
    // Props
    export let grid_state: GridElementType[][];
-   export let path: Node[] | undefined;
+   export let search_results: SearchResult | undefined;
 
    const rows = grid_state.length;
    const cols = grid_state[0].length;
    const enable_edit = true;
    const dispatch = createEventDispatcher();
 
-   $: path_set = ((path: Node[] | undefined) => {
-      if(path) return new Set(path.map(n => n.id));
+   $: path_set = ((search_results: SearchResult | undefined) => {
+      if(search_results) return new Set(search_results.path.map(n => n.id));
       return new Set([] as number[]);
-   })(path);
+   })(search_results);
 
-   const get_search_value = (element: GridElementType, path_set) => {
-      if(path_set.has(get_node_id(element.row, element.col, rows, cols)))
+   $: visited_set = ((search_results: SearchResult | undefined) => {
+      if(search_results) return new Set(search_results.nodes_vistied.map(n => n.id))
+      return new Set([] as number[]);
+   })(search_results);
+
+   const get_search_value = (element: GridElementType, path_set, visited_set) => {
+      const node_id = get_node_id(element.row, element.col, rows, cols)
+      if(path_set.has(node_id))
          return "path";
+      if(visited_set.has(node_id))
+         return "visited";
       return undefined;
    }
 </script>
@@ -43,7 +51,7 @@
                value={element.value}
                row={element.row}
                col={element.col}
-               search_value={get_search_value(element, path_set)}
+               search_value={get_search_value(element, path_set, visited_set)}
             />
          {/each}
       </div>

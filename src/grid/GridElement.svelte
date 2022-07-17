@@ -14,7 +14,8 @@
    $: classes = "grid-item " + value + " " +
       (enable_edit ? "editable " : "") + 
       (selected ? "selected " : "") + 
-      (search_value === "path" ? "path" : ""); 
+      (search_value === "path" ? "path " : "") +
+      (search_value === "visited" ? "visited " : "");
 </script>
 
 <div 
@@ -56,6 +57,10 @@
 
    .grid-item.air.path div {
       background-color: blue;
+   }
+
+   .grid-item.air.visited div {
+      background-color: aquamarine;
    }
 
    .grid-item.editable:hover,

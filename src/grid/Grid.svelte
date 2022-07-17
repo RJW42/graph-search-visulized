@@ -1,6 +1,6 @@
 <script lang="ts">
    import type { GridElementType } from "./tools";
-   import type { Node } from "../graphSearch/graph";
+   import type { Node, SearchResult } from "../graphSearch/graph";
 
    import { init_grid_state } from "./tools";
    import { search } from "../graphSearch/dijkstra";
@@ -17,7 +17,7 @@
    let active_value: string | undefined;
    let values: string[] = ["start", "end", "wall", "air"];
    let grid_state: GridElementType[][] = init_grid_state(rows, cols);
-   let path: Node[] | undefined;
+   let search_results: SearchResult | undefined;
 
    let mouse_value = "up";
    let active_element: GridElementType | undefined;
@@ -40,16 +40,16 @@
       } else if(action === "leave") {
          active_element = undefined;
       } else if(action === "reset") {
-         path = undefined;
+         search_results = undefined;
          grid_state = init_grid_state(rows, cols);
          start_element = undefined;
          end_element = undefined;
       } else if(action === "search") {
          active_value = undefined;
-         path = search(create_graph(grid_state, rows, cols));
+         search_results = search(create_graph(grid_state, rows, cols));
       } else if(action === "set_value") {
          active_value = element as string;   
-         path = undefined;
+         search_results = undefined;
       }
    };
 
@@ -76,7 +76,7 @@
 <div class="root-container">
    <GridDisplay 
       grid_state={grid_state}
-      path={path}
+      search_results={search_results}
       on:action={(event) => perform_action(event.detail.type, event.detail.props)}
    />
 

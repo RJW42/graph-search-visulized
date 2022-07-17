@@ -1,8 +1,9 @@
-import type {Graph, Node} from "./graph";
+import type {Graph, SearchResult, Node} from "./graph";
 
 
-const search = (graph: Graph) => {
+const search = (graph: Graph): SearchResult => {
    // Init search variables
+   const nodes_vistied = [];
    const distances = graph.nodes.map(_ => Infinity);
    const previous = graph.nodes.map(_ => undefined) as (Node | undefined)[];
    
@@ -18,6 +19,13 @@ const search = (graph: Graph) => {
          return (distances[current_min.id] < distances[node.id]) ? 
             current_min : node
       }, node_queue[0]);
+
+      // Check if reached end
+      if(closest_node.id === graph.goal_node)
+         break;
+
+      // Track this node
+      nodes_vistied.push(closest_node);
 
       // Remove closest node from queue 
       node_queue = node_queue.filter(node => node.id !== closest_node.id);
@@ -36,20 +44,28 @@ const search = (graph: Graph) => {
       });
    }
 
-   // Check if reached end
-   if(!previous[graph.goal_node]) {
-      return [];
-   }
-
    // Generate path 
-   const path = [] as Node[];
-   let start_of_path = graph.nodes[graph.goal_node] as Node | undefined;
-   while(start_of_path) {
-      path.push(start_of_path);
-      start_of_path = previous[start_of_path.id];
-   }
+   const path = (() => {
+      // Check if reached end
+      if(!previous[graph.goal_node]) {
+         return [];
+      }
+   
+      // Generate path 
+      const path = [] as Node[];
+      let start_of_path = graph.nodes[graph.goal_node] as Node | undefined;
+      while(start_of_path) {
+         path.push(start_of_path);
+         start_of_path = previous[start_of_path.id];
+      }
 
-   return path;
+      return path;
+   })();
+
+   return {
+      path: path,
+      nodes_vistied: nodes_vistied
+   };
 }
 
 

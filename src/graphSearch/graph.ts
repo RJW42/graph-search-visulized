@@ -8,6 +8,11 @@ type Graph = {
    goal_node: number;
 }
 
+type SearchResult = {
+   path: Node[];
+   nodes_vistied: Node[];
+}
+
 type Node = {
    id: number;
    row: number;
@@ -105,6 +110,6 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
 }
 
 
-export type {Graph, Node};
+export type {Graph, Node, SearchResult};
 export {get_node_id, get_row_col_from_id, create_graph};
 
