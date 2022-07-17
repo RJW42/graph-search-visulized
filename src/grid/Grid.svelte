@@ -13,6 +13,11 @@
 	export let rows: number;
 	export let cols: number;
 
+   type Pair = {
+      r: number;
+      c: number;
+   }
+
    // State 
    let active_value: string | undefined;
    let values: string[] = ["start", "end", "wall", "air"];
@@ -23,6 +28,8 @@
    let active_element: GridElementType | undefined;
    let start_element: GridElementType | undefined;
    let end_element: GridElementType | undefined;
+
+   let clear_timeout: NodeJS.Timeout | undefined;
 
    const perform_action = (action: string, element?: any) => {
       if(action === "mouse_up") {
@@ -41,15 +48,42 @@
          active_element = undefined;
       } else if(action === "reset") {
          search_results = undefined;
-         grid_state = init_grid_state(rows, cols);
          start_element = undefined;
          end_element = undefined;
+         active_value = undefined;
+
+         const reset_timeout = (curr: Pair) => {
+            grid_state[curr.r][curr.c].value = "air";
+            grid_state[curr.r][curr.c].selected = false;
+            grid_state = grid_state;
+
+            if(curr.r >= rows - 1 && curr.c >= cols - 1) { 
+               clear_timeout = undefined;
+               return;
+            }
+            
+            const next = {
+               r: curr.c >= cols - 1 ? curr.r + 1 : curr.r,
+               c: curr.c >= cols - 1 ? 0 : curr.c + 1
+            }
+
+            grid_state[next.r][next.c].selected = true;
+            grid_state = grid_state;
+
+            clear_timeout = setTimeout(() => reset_timeout(next), 100);
+         }
+
+         reset_timeout({r: 0, c: 0});
       } else if(action === "search") {
          active_value = undefined;
          search_results = search(create_graph(grid_state, rows, cols));
       } else if(action === "set_value") {
          active_value = element as string;   
          search_results = undefined;
+         if(!clear_timeout)
+            return;
+         clearTimeout(clear_timeout);
+         grid_state = init_grid_state(rows, cols);
       }
    };
 
@@ -73,7 +107,7 @@
    }
 </script>
 
-<div class="root-container">
+<div class="container">
    <GridDisplay 
       grid_state={grid_state}
       search_results={search_results}
@@ -95,18 +129,8 @@
 		display: flex;
 	}
 
-	.root-container {
+	.container {
 		flex-direction: column;
       width: fit-content;
 	}
-
-   .grid-container {
-      flex-direction: column;
-      width: fit-content;
-      margin-bottom: 0.5em;
-   }
-
-   .grid-row {
-      width: fit-content;
-   }
 </style>
