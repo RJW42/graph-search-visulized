@@ -36,7 +36,7 @@ const get_row_col_from_id = (id: number, rows: number, cols: number): {row: numb
 
 const create_graph = (grid: GridElementType[][], rows: number, cols: number): Graph => {
    // Init variables
-   const partial_nodes = Array(rows * cols).map((id) => {
+   const partial_nodes = [...Array(rows * cols).keys()].map((id) => {
       const rc = get_row_col_from_id(id, rows, cols);
       return {
          id: id,
@@ -45,7 +45,7 @@ const create_graph = (grid: GridElementType[][], rows: number, cols: number): Gr
       };
    });
    
-   const edges = Array(rows * cols).map((id) => {
+   const edges = [...Array(rows * cols).keys()].map((id) => {
       const node = partial_nodes[id];
       const offsetes = [[0, 1], [0, -1], [1, 0], [-1, 0]];
       

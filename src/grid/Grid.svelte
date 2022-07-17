@@ -1,9 +1,13 @@
 <script lang="ts">
+   import type { GridElementType } from "./tools";
+   import type { Node } from "../graphSearch/graph";
+
+   import { init_grid_state } from "./tools";
+   import { search } from "../graphSearch/dijkstra";
+   import { create_graph } from "../graphSearch/graph";
+
    import GridElement from "./GridElement.svelte";
    import ToolSelector from "./ToolSelector.svelte";
-   import {init_grid_state } from "./tools";
-
-   import type {GridElementType} from "./tools";
 
    // Props
 	export let rows: number;
@@ -13,6 +17,7 @@
    let active_value: string | undefined;
    let values: string[] = ["start", "end", "wall", "air"];
    let grid_state: GridElementType[][] = init_grid_state(rows, cols);
+   let path: Node[] | undefined;
 
    let mouse_value = "up";
    let active_element: GridElementType | undefined;
@@ -38,6 +43,11 @@
          grid_state = init_grid_state(rows, cols);
          start_element = undefined;
          end_element = undefined;
+      } else if(action === "search") {
+         path = search(create_graph(grid_state, rows, cols));
+         path.map(node => {
+            grid_state[node.row][node.col].value = "wall"
+         })
       }
    };
 
