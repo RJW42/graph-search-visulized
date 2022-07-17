@@ -1,4 +1,4 @@
-import {GridElementType} from "../grid/tools";
+import type {GridElementType} from "../grid/tools";
 
 
 type Graph = {

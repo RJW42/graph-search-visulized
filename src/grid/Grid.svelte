@@ -16,27 +16,49 @@
 
    let mouse_value = "up";
    let active_element: GridElementType | undefined;
+   let start_element: GridElementType | undefined;
+   let end_element: GridElementType | undefined;
 
    const perform_action = (action: string, element?: GridElementType) => {
       if(action === "mouse_up") {
          mouse_value = "up";
          if(!active_element || !active_value)
             return;
-         active_element.value = active_value;
-         grid_state[active_element.row][active_element.col] = active_element;
+         place_element();
       } else if(action === "mouse_down") {
-         mouse_value = "down";
          mouse_value = "down";
       } else if(action === "enter") {
          active_element = element;
          if(mouse_value !== "down" || !active_value)
             return;
-         active_element.value = active_value;
-         grid_state[active_element.row][active_element.col] = active_element;
+         place_element();
       } else if(action === "leave") {
          active_element = undefined;
+      } else if(action === "reset") {
+         grid_state = init_grid_state(rows, cols);
+         start_element = undefined;
+         end_element = undefined;
       }
    };
+
+   const place_element = () => {
+      if(active_value === "start") {
+         if(start_element) {
+            start_element.value = "air";
+            grid_state[start_element.row][start_element.col] = start_element;
+         }
+         start_element = active_element;
+      } else if(active_value === "end") {
+         if(end_element) {
+            end_element.value = "air";
+            grid_state[end_element.row][end_element.col] = end_element;
+         }
+         end_element = active_element;
+      }
+
+      active_element.value = active_value;
+      grid_state[active_element.row][active_element.col] = active_element;
+   }
 </script>
 
 <div class="root-container">
@@ -65,9 +87,10 @@
    <ToolSelector
       tile_values={values}
       active_value={active_value}
-      actions={["reset", "clear", "search"]}
+      actions={["reset", "search"]}
       enable_actions={true}
       on:set_active={(event) => active_value = event.detail.value}
+      on:perform_action={(event) => perform_action(event.detail.action)}
    />
 </div>
 
