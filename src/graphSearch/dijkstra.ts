@@ -21,7 +21,7 @@ const search = (graph: Graph): SearchResult => {
       }, node_queue[0]);
 
       // Check if reached end
-      if(closest_node.id === graph.goal_node)
+      if(closest_node.id === graph.goal_node || distances[closest_node.id] === Infinity)
          break;
 
       // Track this node
