@@ -70,19 +70,32 @@
             grid_state[next.r][next.c].selected = true;
             grid_state = grid_state;
 
-            clear_timeout = setTimeout(() => reset_timeout(next), 100);
+            clear_timeout = setTimeout(() => reset_timeout(next), 20);
          }
 
          reset_timeout({r: 0, c: 0});
       } else if(action === "search") {
+         if(!start_element || !end_element){
+            // Todo: display error 
+            return;
+         }
+
          active_value = undefined;
          search_results = search(create_graph(grid_state, rows, cols));
-      } else if(action === "set_value") {
-         active_value = element as string;   
-         search_results = undefined;
+         
          if(!clear_timeout)
             return;
          clearTimeout(clear_timeout);
+         clear_timeout = undefined;
+         grid_state = init_grid_state(rows, cols);
+      } else if(action === "set_value") {
+         active_value = element as string;   
+         search_results = undefined;
+         
+         if(!clear_timeout)
+            return;
+         clearTimeout(clear_timeout);
+         clear_timeout = undefined;
          grid_state = init_grid_state(rows, cols);
       }
    };

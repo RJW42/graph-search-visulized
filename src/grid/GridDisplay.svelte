@@ -8,7 +8,6 @@
    // Props
    export let grid_state: GridElementType[][];
    export let search_results: SearchResult | undefined;
-   let prev_search_results;
 
    const rows = grid_state.length;
    const cols = grid_state[0].length;
@@ -22,6 +21,7 @@
    let visited_set = new Set([] as number[]);
    let checked_set = new Set([] as number[]);
    let timeout: undefined | NodeJS.Timeout;
+   let prev_search_results: SearchResult | undefined;
 
    const update_path = (i: number) => {
       if(i >= search_results.path.length) return;
@@ -43,7 +43,6 @@
          update_visited(i, j + 1);
          return;
       }
-      console.log("yee");
       checked_set = checked_set.add(search_results.nodes_checked[i][j].id);
       timeout = setTimeout(() => update_visited(i, j + 1), visited_timneout_time);
    }
@@ -54,7 +53,9 @@
          if(timeout) clearTimeout(timeout);
          if(path_set.size > 0) path_set = new Set([] as number[]);
          if(visited_set.size > 0) visited_set = new Set([] as number[]);
+         if(checked_set.size > 0) checked_set = new Set([] as number[]);
          prev_search_results = undefined;
+         timeout = undefined;
          return;
       }
 
