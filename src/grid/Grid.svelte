@@ -81,7 +81,10 @@
          }
 
          active_value = undefined;
-         search_results = search(create_graph(grid_state, rows, cols));
+         search_results = undefined;
+         setTimeout(() => {
+            search_results = search(create_graph(grid_state, rows, cols));
+         }, 10);
          
          if(!clear_timeout)
             return;

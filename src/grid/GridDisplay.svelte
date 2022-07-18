@@ -34,12 +34,14 @@
          timeout = setTimeout(() => update_path(0), path_timeout_time);
          return;
       }
+
+      if(j == 0) visited_set = visited_set.add(search_results.nodes_vistied[i].id);
+
       if(j >= search_results.nodes_checked[i].length) { 
-         visited_set = visited_set.add(search_results.nodes_vistied[i].id);
          timeout = setTimeout(() => update_visited(i + 1, 0), visited_timneout_time);
          return;
       } 
-      if(checked_set.has(j)) {
+      if(checked_set.has(search_results.nodes_checked[i][j].id)) {
          update_visited(i, j + 1);
          return;
       }
