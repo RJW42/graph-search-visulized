@@ -5,6 +5,14 @@
    export let active_value: string | undefined;
    export let actions: string[];
    export let enable_actions: boolean;
+   export let search_algorithms: string[];
+   export let current_algorithm: string;
+
+   console.log(search_algorithms);
+   console.log(current_algorithm);
+
+   let algorithm_dropdown = false;
+
 
    const dispatch = createEventDispatcher();
 </script>
@@ -42,6 +50,17 @@
             {action}
          </div>
       {/each}
+      <div 
+         class="action dropdown-container"
+         on:click={() => algorithm_dropdown = !algorithm_dropdown}
+      >
+         Algorithm
+         <div class={"dropdown " + algorithm_dropdown ? "visible" : "hidden"}>
+            <div class="dropdown-element"> 1 </div>
+            <div class="dropdown-element"> 2 </div>
+            <div class="dropdown-element"> 3 </div>
+         </div>
+      </div>
    </div>
 </div>
 

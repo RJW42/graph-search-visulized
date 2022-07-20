@@ -134,6 +134,8 @@
       tile_values={values}
       active_value={active_value}
       actions={["reset", "search"]}
+      search_algorithms={["dijkstra, astar"]}
+      current_algorithm="dijkstra"
       enable_actions={true}
       on:set_active={(event) => perform_action("set_value", event.detail.value)}
       on:perform_action={(event) => perform_action(event.detail.action)}
