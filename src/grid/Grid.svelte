@@ -5,9 +5,11 @@
    import { init_grid_state } from "./tools";
    import { search } from "../graphSearch/dijkstra";
    import { create_graph } from "../graphSearch/graph";
+   import { notifications } from "./notifications";
 
    import ToolSelector from "./ToolSelector.svelte";
    import GridDisplay from "./GridDisplay.svelte";
+   import Toast from "./Toast.svelte";
 
    // Props
 	export let rows: number;
@@ -75,8 +77,8 @@
 
          reset_timeout({r: 0, c: 0});
       } else if(action === "search") {
-         if(!start_element || !end_element){
-            // Todo: display error 
+         if(!start_element || !end_element){   
+            notifications.danger('Start and End required for search', 1000);
             return;
          }
 
@@ -116,7 +118,12 @@
             grid_state[end_element.row][end_element.col] = end_element;
          }
          end_element = active_element;
+      } else if(active_element === start_element){
+         start_element = undefined;
+      } else if(active_element === end_element){
+         end_element = undefined;
       }
+
 
       active_element.value = active_value;
       grid_state[active_element.row][active_element.col] = active_element;
@@ -141,6 +148,7 @@
       on:perform_action={(event) => perform_action(event.detail.action)}
    />
 </div>
+<Toast />
 
 <style>
 	div {

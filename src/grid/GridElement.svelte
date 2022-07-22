@@ -44,6 +44,10 @@
       background-color: aliceblue;
    }
 
+   .grid-item.air.selected div {
+      background-color: antiquewhite;
+   }
+
    .grid-item.start div {
       background-color: green;
    }
