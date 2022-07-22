@@ -22,7 +22,7 @@
       <h2>Values</h2>
       {#each tile_values as value}
          <div 
-            class={"value " + (value === active_value ? "active " : "")}
+            class={"value clickable " + (value === active_value ? "active " : "")}
             on:click={() => {
                if (value === active_value)
                   return;
@@ -40,7 +40,7 @@
       <h2>Actions</h2>
       {#each actions as action}
          <div 
-            class={"action " + (enable_actions ? "enable " : "disable ")}
+            class={"action clickable " + (enable_actions ? "enable " : "disable ")}
             on:click={() => {
                dispatch("perform_action", {
                   action: action
@@ -51,14 +51,18 @@
          </div>
       {/each}
       <div 
-         class="action dropdown-container"
-         on:click={() => algorithm_dropdown = !algorithm_dropdown}
+         class={"action dropdown-container " + (algorithm_dropdown ? "visible" : "hidden")}
       >
+         <div 
+            class="clickable title "
+            on:click={() => algorithm_dropdown = !algorithm_dropdown}
+         >
          Algorithm
-         <div class={"dropdown " + algorithm_dropdown ? "visible" : "hidden"}>
-            <div class="dropdown-element"> 1 </div>
-            <div class="dropdown-element"> 2 </div>
-            <div class="dropdown-element"> 3 </div>
+         </div>   
+         <div class={"dropdown " + (algorithm_dropdown ? "visible" : "hidden")}>
+            <div class="dropdown-element clickable"> 1 </div>
+            <div class="dropdown-element clickable"> 2 </div>
+            <div class="dropdown-element clickable"> 3 </div>
          </div>
       </div>
    </div>
@@ -90,8 +94,15 @@
       cursor: pointer;
    }
 
+   .clickable:hover {
+      cursor: pointer;
+      color: lightgrey;
+      font-style: italic;
+   }
+
    .value.active:hover {
       cursor: default;
+      font-style: normal;
    }
 
    .action.disable {
@@ -100,5 +111,18 @@
 
    .value.active {
       color: green;
+   }
+
+   .dropdown.hidden {
+      display: none;
+   }
+
+   .dropdown-container {
+      margin-left: -0.2em;
+   }
+
+   .dropdown.visible {
+      box-shadow: inset;
+      z-index: 0;
    }
 </style>
