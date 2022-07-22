@@ -1,9 +1,10 @@
 <script lang="ts">
    import type { GridElementType } from "./tools";
-   import type { Node, SearchResult } from "../graphSearch/graph";
+   import type { SearchResult } from "../graphSearch/graph";
 
    import { init_grid_state } from "./tools";
-   import { search } from "../graphSearch/dijkstra";
+   import { search as dijkstra } from "../graphSearch/dijkstra";
+   import { search_eclidian as ecl_astar, search_manhatan as man_astar} from "../graphSearch/astar";
    import { create_graph } from "../graphSearch/graph";
    import { notifications } from "./notifications";
 
@@ -20,7 +21,11 @@
       c: number;
    }
 
+   const search_algorithms = ["dijkstra", "astar (manhatan)", "astar (eclidian)"];
+
    // State 
+   let current_algorithm = search_algorithms[0];
+   
    let active_value: string | undefined;
    let values: string[] = ["start", "end", "wall", "air"];
    let grid_state: GridElementType[][] = init_grid_state(rows, cols);
@@ -32,6 +37,7 @@
    let end_element: GridElementType | undefined;
 
    let clear_timeout: NodeJS.Timeout | undefined;
+   let search = dijkstra;
 
    const perform_action = (action: string, element?: any) => {
       if(action === "mouse_up") {
@@ -102,6 +108,17 @@
          clearTimeout(clear_timeout);
          clear_timeout = undefined;
          grid_state = init_grid_state(rows, cols);
+      } else if(action === "set_algorithm") {
+         if(element === "dijkstra") {
+            search = dijkstra;
+            current_algorithm = element;
+         } else if(element === "astar (manhatan)") {
+            search = man_astar;
+            current_algorithm = element;
+         } else if(element === "astar (eclidian)") {
+            search = ecl_astar;
+            current_algorithm = element;
+         }
       }
    };
 
@@ -141,11 +158,11 @@
       tile_values={values}
       active_value={active_value}
       actions={["reset", "search"]}
-      search_algorithms={["dijkstra, astar"]}
-      current_algorithm="dijkstra"
+      search_algorithms={search_algorithms}
+      current_algorithm={current_algorithm}
       enable_actions={true}
       on:set_active={(event) => perform_action("set_value", event.detail.value)}
-      on:perform_action={(event) => perform_action(event.detail.action)}
+      on:perform_action={(event) => perform_action(event.detail.action, event.detail.value)}
    />
 </div>
 <Toast />

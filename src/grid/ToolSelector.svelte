@@ -8,9 +8,6 @@
    export let search_algorithms: string[];
    export let current_algorithm: string;
 
-   console.log(search_algorithms);
-   console.log(current_algorithm);
-
    let algorithm_dropdown = false;
 
 
@@ -60,9 +57,22 @@
          Algorithm
          </div>   
          <div class={"dropdown " + (algorithm_dropdown ? "visible" : "hidden")}>
-            <div class="dropdown-element clickable"> 1 </div>
-            <div class="dropdown-element clickable"> 2 </div>
-            <div class="dropdown-element clickable"> 3 </div>
+            {#each search_algorithms as algorithm}
+               <div 
+                  class={"dropdown-element " + 
+                     (algorithm === current_algorithm ? 
+                        "current" : "clickable")
+                        }
+                  on:click={() => {
+                     dispatch("perform_action", {
+                        action: "set_algorithm",
+                        value: algorithm
+                     });
+                  }}
+               > 
+                  {algorithm}   
+               </div>
+            {/each}
          </div>
       </div>
    </div>
@@ -100,7 +110,8 @@
       font-style: italic;
    }
 
-   .value.active:hover {
+   .value.active:hover, 
+   .dropdown-element.current {
       cursor: default;
       font-style: normal;
    }
@@ -109,7 +120,8 @@
       color: lightgray;
    }
 
-   .value.active {
+   .value.active,
+   .dropdown-element.current {
       color: green;
    }
 
