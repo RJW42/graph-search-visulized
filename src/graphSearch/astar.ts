@@ -4,7 +4,7 @@ const search = (graph: Graph, _heuristic: (n1: number, n2: number, graph: Graph)
    // Init tracking metrics
    const path = [] as Node[];
    const nodes_visited = [] as Node[];
-   const nodes_checked = graph.nodes.map(n => [] as Node[]);
+   const nodes_checked = [] as Node[];
 
    // Init heruistic
    const heuristic = (n1: number, n2: number) => _heuristic(n1, n2, graph);
@@ -46,15 +46,14 @@ const search = (graph: Graph, _heuristic: (n1: number, n2: number, graph: Graph)
       open_list.splice(
          open_list.findIndex((value) => value === q), 1
       ); 
-
-      // Track nodes visited
-      nodes_visited.push(graph.nodes[q]);
       
       if (q === graph.goal_node){
          create_path(parents);
          break;
       }
-      
+
+      // Track nodes visited
+      nodes_visited.push(graph.nodes[q]);
       const edges_checked = [] as Node[];
 
       for(const edge of graph.edges[q]) {
